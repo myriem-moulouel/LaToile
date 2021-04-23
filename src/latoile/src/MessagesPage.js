@@ -1,12 +1,17 @@
 import React from 'react';
-import barreGauche from './barreGauche';
+import BarreGauche from './BarreGauche';
+import Post from './Post'
+import Feed from './Feed'
+import Widgets from './Widgets'
 
-class MessagesPage extends React.Component {
-  render() {
+function MessagesPage({lastname, firstname, login}) {
     return <div>
-      <barreGauche />
+        <Feed lastname={lastname} firstname={firstname} login={login}/>
+        <BarreGauche />
+        <Widgets />
+      
+      
     </div>;
-  }
 }
 
 export default MessagesPage;

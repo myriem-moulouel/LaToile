@@ -18,11 +18,6 @@ class Login extends React.Component {
         <div className="button">
           <button type="submit" href="/login" onClick={() => { this.props.login() }}>Connexion</button>
         </div>
-        <div>
-          <a data-testid="loginButton" href="/login">event
-            <span>oooo</span>event
-          </a>
-        </div>
       </form>
     </div>;
   }

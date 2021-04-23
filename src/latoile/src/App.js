@@ -1,6 +1,5 @@
 import './App.css';
 import MainPage from './MainPage';
-import BarreGauche from './BarreGauche';
 
 import React from 'react';
 import axios from 'axios';
@@ -27,7 +26,7 @@ function App() {
 
   return (
     <div className="App">
-      <BarreGauche />
+      <MainPage />
     </div>
   );
 }

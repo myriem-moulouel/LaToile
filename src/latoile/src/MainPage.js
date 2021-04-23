@@ -11,6 +11,9 @@ class MainPage extends React.Component {
       currentPage: 'login', // valeurs possibles: 'login', 'messages', 'signin',
       isConnected: false,
       restorer:false,
+      lastname: 'lala',
+      firstname: 'mimi',
+      login: -1
     }
   }
 
@@ -47,7 +50,7 @@ class MainPage extends React.Component {
         <main>
           <div>
           {currentPage === 'messages'
-            && <MessagesPage />}
+            && <MessagesPage lastname={this.state.lastname} firstname={this.state.firstname} login={this.state.login}/>}
           {currentPage === 'signup' 
             && <SignUp />} 
             <p>Venez nombreux communauté bienveillante :)</p>
