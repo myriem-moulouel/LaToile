@@ -1,0 +1,439 @@
+const express = require("express");
+const Users = require("./entities/users.js");
+const Messages = require("./entities/messages.js");
+
+function init(dbUsers, dbMessages) {
+    const router = express.Router();
+    // On utilise JSON
+    router.use(express.json());
+    // simple logger for this router's requests
+    // all requests to this router will first hit this middleware
+    router.use((req, res, next) => {
+        
+        console.log('API: method %s, path %s', req.method, req.path);
+        console.log('Body', req.body);
+        next();
+    });
+    const users = new Users.default(dbUsers, dbMessages);
+    const message = new Messages.default(dbMessages);
+    //avec la commande http POST localhost:4000/api/user/login login=X password=XXX
+    //renvoie le user s'il existe et si le motdepasse est correct
+    //to login
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           CONNEXION
+
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.post("/user/login", async (req, res) => {
+        try {
+            const { login, password } = req.body;
+            // Erreur sur la requête HTTP
+            if (!login || !password) {
+                res.status(400).json({
+                    status: 400,
+                    "message": "Requête invalide : tous les champs nécessaires"
+                });
+                return;
+            }
+            if(! await users.exists(login)) {
+                res.status(401).json({
+                    status: 401,
+                    message: "Utilisateur inconnu"
+                });
+                return;
+            }
+            let userid = await users.checkpassword(login, password);
+            if (userid) {
+                // Avec middleware express-session
+                req.session.regenerate(function (err) {
+                    if (err) {
+                        res.status(500).json({
+                            status: 500,
+                            message: "Erreur interne"
+                        });
+                    }
+                    else {
+                        // C'est bon, nouvelle session créée
+                        req.session.userid = login;
+                        res.status(200).json({
+                            status: 200,
+                            message: "Login et mot de passe accepté"
+                        });
+                    }
+                });
+                //console.log(req.session.cookie);
+                return;
+            }
+            // Faux login : destruction de la session et erreur
+            req.session.destroy((err) => { });
+            res.status(403).json({
+                status: 403,
+                message: "login et/ou le mot de passe invalide(s)"
+            });
+            return;
+        }
+        catch (e) {
+            // Toute autre erreur
+            res.status(500).json({
+                status: 500,
+                message: "erreur interne",
+                details: (e || "Erreur inconnue").toString()
+            });
+        }
+    });
+
+    //to logout
+    router.get('/user/:user_id/logout', (req, res) => { //   DECONNECTION!!!!
+        
+        req.session.destroy((err) => { });
+        res.status(202).json({
+            status: 202,
+            message: "vous vous etes deconnecter "
+        });
+        return;
+       res.send('Vous etes deconnecter');
+       res.redirect('/users/loggin');
+    });
+
+    router.post("/follow/add/:user_id", (req, res) => { // Inscription 
+        //const { login} = req.body;
+        //console.log("je suis la")
+        //console.log(login)
+
+            let amis= users.exists(req.params.user_id)
+            if(! amis) {
+                res.status(401).json({
+                    status: 401,
+                    message: "Utilisateur inconnu"
+                });
+                return;
+            } else {
+                users.followUser( req.session.userid, req.params.user_id)
+
+                .then((user_id) => res.status(201).send( `'${req.session.userid}' suit ${user_id} `))
+                .catch((err) => res.status(500).send(err));
+            }
+
+
+        })
+
+ /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>         FOLLOW FRIEND
+
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    //commmande http localhost:api/user/friend/x login=y
+    //x suit y
+    router.post("/user/follow/:user_id(\\d+)", async (req, res) => { 
+        // Inscription 
+        const ami = req.body; 
+        //console.log("je suis la") 
+        console.log(ami.login) 
+        let amis = await users.exists(ami.login) 
+        if(! amis) { 
+            //console.log("c inconuuuuuuuuuuuuuuuu");
+            res.status(401).json({ 
+                status: 401, 
+                message: "Utilisateur inconnu" 
+            }); 
+            return; 
+        } else {
+            if(ami.login==req.params.user_id){
+                res.status(404).send("impossible de suivre soi-même !")
+            }else{
+                //console.log("ami existant ______________________")
+                //console.log("user = ", req.params.user_id)
+                //console.log("ami = ", ami.login)
+                users.followUser(req.params.user_id, ami.login) 
+                .then((user_id) => res.status(201).send( `Vous suivez ${user_id}` )) 
+                .catch((err) => res.status(500).send(err));
+            }
+        } 
+    })
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           UNFOLLOW FRIEND
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    router.delete('/user/unfollow/:user_id(\\d+)', async (req, res) =>{
+        const ami = req.body;
+        console.log(ami.login)
+        let amis = await users.exists(ami.login)
+        console.log("amis = ",amis);
+        if(! amis){
+            res.status(401).json({
+                status: 401,
+                message: "Utilisateur inconnu"
+            });
+            return;
+        } else {
+            friend = await users.exists_following(req.params.user_id, ami.login);
+            if(! friend){
+                res.status(404).send("il n'est pas dans la liste des followings");
+            } else {
+                users.UnfollowUser(req.params.user_id, ami.login)
+                .then((user_id) => res.status(201).send(`vous ne suivez plus ${user_id}`))
+                .catch((err) => res.status(500).send(err));
+            }
+        }
+    });
+
+
+    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           GETFOLLOWINGS
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    router.get('/user/allfollowing/:user_id(\\d+)', async (req,res) => {
+        const user = await users.exists(req.params.user_id);
+        if(! user){
+            res.status(401).json({
+                status: 401,
+                message: "user inconnu"
+            });
+        } else {
+            users.getFollowings(req.params.user_id)
+            .then((followings) => res.status(201).send(followings))
+            .catch((err) => res.status(500).send(err));
+        }
+    })
+
+    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           GETFOLLOWERS
+
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    router.get('/user/allfollower/:user_id(\\d+)', async (req,res) => {
+        const user = await users.exists(req.params.user_id);
+        if(! user){
+            res.status(401).json({
+                status: 401,
+                message: "user inconnu"
+            });
+        } else {
+            users.getFollowers(req.params.user_id)
+            .then((followings) => res.status(201).send(followings))
+            .catch((err) => res.status(500).send(err));
+        }
+    })
+    
+    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE =>           AJOUTER D'UN MESSAGE
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        router.post('/message/add/:id(\\d+)', async(req,res)=>{
+            //const id=req.session.login;
+            let user= await users.exists(req.params.id)
+            const msg=req.body.message;
+            
+             if(!user) {
+                res.status(401).json({
+                    status: 401,
+                    message: "Utilisateur inconnu"
+                });
+                return;
+            }
+            if(!msg){
+                res.status(400).json({status:400, msg: "Mettez quelque chose !"});
+                return;
+             }
+            else{
+                message.insertMessage(req.params.id,msg)
+                .then((doc)=>res.status(201).send(`'${doc.message}' posté par '${doc.login}'`))
+                .catch((err) => res.status(500).send(err));
+            }
+        })
+    
+
+    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE =>           SUPPRIMER D'UN MESSAGE
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.delete('/message/delete', async(req,res)=>{
+        try{
+            let login = await users.exists(req.body.login)
+            const msg=req.body.message;
+            
+            if(!login) {
+                res.status(401).json({
+                    status: 401,
+                    message: "Utilisateur inconnu"
+                });
+                return;
+            }
+            if(!msg){
+                res.status(400).json({status:400, msg: "Mettez quelque chose !"});
+                return;
+            }
+            else{
+                const passwordCheck = await users.checkpassword(req.body.login, req.body.password);
+                if(!passwordCheck){
+                    res.status(406)
+                    .send(`password incorrect ! '${req.body.login}' et '${req.body.password}'`);
+                }else{
+                    console.log("il existe bien ==================");
+                    message.deleteMessage(login, msg)
+                    .then((doc) => res.send(`delete of '${doc}' message succeded`))
+                    .catch((err) => res.status(500).send('delete invalide'));
+                }
+            }
+        }
+        catch (e) {
+            res.status(500).send(e);
+        }
+    });
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           DECONNEXION
+
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.delete('/user/logout', (req, res) => { //   DECONNECTION!!!!
+       if(typeof req.cookies['connect.sid'] !== 'undefined') {
+            console.log(req.cookies['connect.sid']);
+            req.session.destroy((err) => { });
+                res.status(202).json({
+                    status: 202,
+                    message: "vous vous etes deconnecter "
+                });
+        }   
+            
+            
+        //sres.redirect('/user/loggin');
+    });
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>          TROUVER     UTILISATEUR
+                                                      =>          SUPPRESSION UTILISATEUR
+
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router
+        .route("/user/:user_id(\\d+)")
+        .get(async (req, res) => {
+            try {
+                console.log(`y-t-il l'utilisateur '${req.params.user_id}' ?`);
+                const exist= await users.exists(req.params.user_id);
+                if(!exist)
+                    res.status(404)
+                    .send(`ùtilisateur '${req.params.user_id}' non existant`);
+                else{
+                    users.get(req.params.user_id)
+                    .then((user_id) => res.status(302).send(`user '${req.params.user_id}' trouvé`))
+                    .catch((err) => res.status(204).send(err))
+                }
+            }
+            catch (e) {
+                res.status(500).send(e)
+            }
+        })
+        .delete(async (req, res) => {
+            try{
+                console.log(req.params.user_id);
+                const para = req.body;
+                console.log("apres le print")
+                const existUser = await users.exists(req.params.user_id);
+                console.log('apres le exist');
+                if(!existUser){
+                    res.status(404)
+                    .send(`user '${req.params.user_id}' not existant !`);
+                }else{
+                    const passwordCheck = await users.checkpassword(req.params.user_id, para.password);
+                    if(!passwordCheck){
+                        res.status(406)
+                        .send(`password incorrect !`);
+                    }else{
+                        console.log("il existe bien ==================");
+                        users.deleteUser(req.params.user_id, para.password)
+                        .then((user_id) => res.send(`delete user ${user_id} succeded`))
+                        .catch((err) => res.status(500).send('delete invalide'));
+                    }
+                } 
+            }
+            catch (e) {
+                res.status(500).send(e);
+            }
+        });
+
+    //afficher
+    router
+        .route("/profile/followings/:user_id(\\d+)")
+        .get(async (req, res) => {
+            try {
+                console.log(`y-t-il l'utilisateur '${req.params.user_id}' ?`);
+                const exist= await users.exists(req.params.user_id);
+                if(!exist)
+                    res.status(404)
+                    .send(`ùtilisateur '${req.params.user_id}' non existant`);
+                else{
+                    console.log(`les followings de '${req.params.user_id}' sont:`);
+                    let followings = await users.getFollowings(req.params.user_id)
+                    /*.forEach((row) => {
+                        console.log(row.user)
+                    })*/
+                    .then( (row) => res.status(302).send())
+                    .catch((err) => res.status(204).send(err));
+                    //console.log(followings);
+
+                    /*console.log(`les tweets '${req.params.user_id}' sont:`);
+                    let tweets = massages.getTweets(req.params.user_id)
+                    .then((user_id) => res.status(200).send(`les tweets de '${user_id}' sont recuperes`))
+                    .catch((err) => res.status(204));
+                    console.log(tweets);*/
+                }
+            }
+            catch (e) {
+                res.status(500).send(e)
+            }
+        })
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           CREATION D'UN UTILISATEUR
+
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.put("/user", (req, res) => {
+        console.log(req.session);
+        const { login, password, lastname, firstname } = req.body;
+        if (!login || !password || !lastname || !firstname) {
+            res.status(400).send({"status": "error", "msg":"Missing fields"});
+        } else {
+            console.log('je suis la');
+            users.create(login, password, lastname, firstname)
+                .then((user_id) => res.status(201).send({ id: user_id }))
+                .catch((err) => res.status(500).send(err));
+        }
+    });
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           SEARCH USERS
+
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.get("/user/search", (req, res) => {
+        const {lastname, firstname } = req.body;
+        if (!lastname && !firstname){
+            res.status(400).send({"status": "erro", "msg": "aucun nom ou prenom saisi"});
+        } else {
+            users.search(lastname, firstname)
+            .then((user_id) => res.status(201).send({ id: user_id}))
+            .catch((err) => res.status(500).send(err));
+        }
+    })
+
+    return router;
+}
+exports.default = init;
+
