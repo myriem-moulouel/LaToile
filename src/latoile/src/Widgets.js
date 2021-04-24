@@ -14,7 +14,6 @@ function Widgets() {
       </div>
 
       <div className="widgets__widgetContainer">
-        <h2>What's happening</h2>
         <h3>Connect to your twitter count ;)</h3>
 
         <TwitterShareButton

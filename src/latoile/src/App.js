@@ -1,13 +1,12 @@
 import './App.css';
 import MainPage from './MainPage';
+import Accueil from './Accueil';
 
 import React from 'react';
 import axios from 'axios';
 
 
 function App() {
-  
-
 
   const api = axios.create({
 	    baseURL : '/api/',

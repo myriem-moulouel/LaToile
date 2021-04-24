@@ -14,23 +14,28 @@ import { Button } from "@material-ui/core";
 
 import TweetBox from './TweetBox';
 
+const tweetBox = () => {
+    return <TweetBox />
+}
 
-function BarreGauche() {
+function BarreGauche({ activate }) {
     return (
         <div className="barre" style={{width: 300, minHeight: 100 }}>
             <GoZap className="barre__twitterIcon" />
-
-            <BarreOption active Icon={HomeIcon} text="Home" />
-            <BarreOption Icon={SearchIcon} text="Explore" />
-            <BarreOption Icon={NotificationsNoneIcon} text="Notifications" />
-            <BarreOption Icon={MailOutlineIcon} text="Messages" />
-            <BarreOption Icon={BookmarkBorderIcon} text="Bookmarks" />
-            <BarreOption Icon={ListAltIcon} text="Lists" />
-            <BarreOption Icon={PermIdentityIcon} text="Profile" />
-            <BarreOption Icon={MoreHorizIcon} text="More" />
-
+            { activate === 'Home' && 
+                <div>
+                <BarreOption active Icon={HomeIcon} text="Home" />
+                <BarreOption Icon={PermIdentityIcon} text="Profile" />
+                </div>
+            }
+            { activate === 'Profile' &&
+                <div>
+                <BarreOption Icon={HomeIcon} text="Home" />
+                <BarreOption active Icon={PermIdentityIcon} text="Profile" />
+                </div>
+            }
             {/* Button -> Tweet */}
-            <Button variant="outlined" className="barre__tweet" fullWidth type="submit" onClick={() => { <TweetBox /> }}> 
+            <Button variant="outlined" className="barre__tweet" fullWidth type="submit" onClick={tweetBox}> 
                 Tweet
             </Button>
         </div>

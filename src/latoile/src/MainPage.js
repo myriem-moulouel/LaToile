@@ -2,6 +2,10 @@ import React from 'react';
 import NavigationPanel from './NavigationPanel';
 import MessagesPage from './MessagesPage';
 import SignUp from './SignUp';
+import Accueil from './Accueil';
+import Login from './Login';
+import Footer from './Footer';
+import Header from './Header';
 
 class MainPage extends React.Component {
   
@@ -11,10 +15,23 @@ class MainPage extends React.Component {
       currentPage: 'login', // valeurs possibles: 'login', 'messages', 'signin',
       isConnected: false,
       restorer:false,
-      lastname: 'lala',
-      firstname: 'mimi',
-      login: -1
+      lastname: 'none',
+      firstname: 'none',
+      login: -1,
+      activate: 'Home'
     }
+  }
+  
+  setLastname = (lastname) => {
+    this.state.lastname = {lastname}
+  }
+
+  setFirstname = (firstname) => {
+    this.state.firstname = {firstname}
+  }
+
+  setLogin = (login) => {
+    this.state.login = {login}
   }
 
   setConnected = () => {
@@ -39,21 +56,21 @@ class MainPage extends React.Component {
     const { isConnected, currentPage } = this.state;
 
     return <div>
-        <h1>Birdy !</h1>
+        <Header />
         <NavigationPanel
           isConnected={isConnected}
           login={() => { this.setConnected() }}  
           logout={() => { this.setLogout() }}  
           signup={() => { this.signup() }}
-          mdp={() => { this.restaurer() }}
         />
         <main>
           <div>
           {currentPage === 'messages'
-            && <MessagesPage lastname={this.state.lastname} firstname={this.state.firstname} login={this.state.login}/>}
+            && <MessagesPage lastname={this.state.lastname} firstname={this.state.firstname} login={this.state.login} activate={this.state.activate} />}
           {currentPage === 'signup' 
             && <SignUp />} 
             <p>Venez nombreux communauté bienveillante :)</p>
+            <Footer />
           </div>
         </main>
       </div>
