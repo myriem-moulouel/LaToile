@@ -1,6 +1,5 @@
 const path = require('path');
 const api = require('./api.js');
-const bodyParser = require('body-parser');
 const express = require('express');
 const app = express()
 
@@ -48,7 +47,6 @@ dbMessages.loadDatabase( function(err) {
 
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser, express.urlencoded({extended: true}));
 
 
 app.use('/api', api.default(dbUsers, dbMessages));

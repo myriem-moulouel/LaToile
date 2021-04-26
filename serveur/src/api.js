@@ -28,8 +28,9 @@ function init(dbUsers, dbMessages) {
     router.post("/user/login", async (req, res) => {
         try {
             const { login, password } = req.body;
+            console.log("oulala",req.body);
             // Erreur sur la requête HTTP
-            if (!login || !password) {
+            if (login=='' || password=='') {
                 res.status(400).json({
                     status: 400,
                     "message": "Requête invalide : tous les champs nécessaires"
@@ -37,6 +38,7 @@ function init(dbUsers, dbMessages) {
                 return;
             }
             if(! await users.exists(login)) {
+                console.log(users.exists(login));
                 res.status(401).json({
                     status: 401,
                     message: "Utilisateur inconnu"
@@ -412,7 +414,7 @@ function init(dbUsers, dbMessages) {
             console.log('je suis la');
             users.create(login, password, lastname, firstname)
                 .then((user_id) => res.status(201).send({ id: user_id }))
-                .catch((err) => res.status(500).send(err));
+                .catch((err) => {res.status(500).send(err); console.log(err)});
         }
     });
 

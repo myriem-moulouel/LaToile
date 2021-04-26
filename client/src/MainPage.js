@@ -69,7 +69,7 @@ class MainPage extends React.Component {
             && <MessagesPage lastname={this.state.lastname} firstname={this.state.firstname} login={this.state.login} activate={this.state.activate} />}
           {currentPage === 'signup' 
             && <SignUp />} 
-            <p>Venez nombreux communauté bienveillante :)</p>
+            <h3>Venez nombreux communauté bienveillante :)</h3>
             <Footer />
           </div>
         </main>

@@ -42,7 +42,9 @@ class Users {
 
       this.db.exec(insertUser, function(err){
         if(err) {
-            console.log('erreur detectee')
+            console.log(err);
+            console.log(login);
+            console.log(password);
             reject(err);
         } else {
             resolve(login);
@@ -53,7 +55,7 @@ class Users {
 
   get(userid) {
     return new Promise((resolve, reject) => {
-      const user = `SELECT login, password, firstname, lastname FROM users WHERE login = ${userid} `;
+      const user = `SELECT login, password, firstname, lastname FROM users WHERE login = '${userid}' `;
       this.db.get(user,(err,data)=>{
         if(err){
           reject(err);
@@ -70,9 +72,12 @@ class Users {
     return new Promise((resolve, reject) => {
       const selectUser = `SELECT login From users WHERE login = '${login}'`;
       this.db.get(selectUser, function(err, row){
+        console.log("je suis dans exist", login);
         if(err){
+          console.log("il y a une errrrreeeeu");
           reject(err);
         }else{
+          console.log("on est dans le resolve",row);
           resolve(row != undefined);
         }
       })
