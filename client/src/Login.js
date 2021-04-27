@@ -4,49 +4,70 @@ import postLogin from './postLogin'
 
 class Login extends Component {
 
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.state = {
-      login: '',
-      password: ''
+      login: null,
+      password: null
     }
+    console.log(this.state)
   }
-  oo = () => {
-    console.log("lll");
-  }
+    handleChangeL = event => {
+        this.setState({ login: event.target.value });
+        console.log(event.currentTarget.value)
+    }
+        
+    handleChangeP = event => {
+        this.setState({ password: event.target.value });
+        console.log(event.currentTarget.value)
+    }
+    
+    submit = (e) => {
+        e.preventDefault();
+        console.log(`login:${this.state.login}  password:${this.state.password}`);
+        const login = this.state.login;
+        const password = this.state.password;
+        console.log(login);
+        console.log(password);
+        this.props.outil( this.state.login, this.state.password );
+        this.props.searching(this.state.login);
+    }
   
-  post = () => {
-    postLogin(this.state.login, this.state.password);
-  }
-  
-  render() {
-    return <div className="LoginForm">
-      <h2>Connexion</h2>
-      <form action="../api/user/login" method="post" className="form">
-        <div className="elemform">
-          <label htmlFor="login">  Login </label>
-          <input 
-            type="text" 
-            id="login" 
-            name="login"
-            onChange={(e) => this.setState({login: e.target.value}) }/>
-        </div>
-        <div className="elemform">
-          <label htmlFor="password">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password"
-            onChange={(e) => this.setState({password: e.target.value}) }/>
-        </div>    
-        <div class="button">
-          <button 
-            type="submit"
-            onClick={ postLogin(this.state.login, this.state.password) }>Connexion</button>
-        </div>
-      </form>
-    </div>;
-  }
+    render() {
+        return <div className="LoginForm">
+            <h2>Connexion</h2>
+            <form onSubmit={this.submit}>
+                <div class="elemform">
+                    <label for="login">  Login </label>
+                    <input 
+                    type="text" 
+                    id="login" 
+                    name="login"
+                    onChange={ this.handleChangeL } 
+                    value={this.state.login}/>
+                </div>
+                <div class="elemform">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password"
+                        onChange={ this.handleChangeP }
+                        value={this.state.password}/>
+                </div>    
+                <div class="button">
+                    <button>Connexion</button>
+                </div>
+            </form>
+                <div><p>Pas encore inscrit ? veuillez retourner </p>
+                    <button 
+                        type="onclick" 
+                        onClick={ ()=>{ this.props.acces('Accueil') } }>
+                        <span> Retour </span>
+                    </button>
+                </div>
+        </div>;
+    }
 }
 
 export default Login;

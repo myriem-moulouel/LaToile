@@ -331,7 +331,7 @@ function init(dbUsers, dbMessages) {
                     .send(`ùtilisateur '${req.params.user_id}' non existant`);
                 else{
                     users.get(req.params.user_id)
-                    .then((user_id) => res.status(302).send(`user '${req.params.user_id}' trouvé`))
+                    .then((user_id) => res.status(200).send( user_id ))
                     .catch((err) => res.status(204).send(err))
                 }
             }

@@ -60,7 +60,7 @@ class Users {
         if(err){
           reject(err);
         }else{
-          console.log(data);
+          console.log("data=",data);
           resolve(data);
         }
         //console.log(data);

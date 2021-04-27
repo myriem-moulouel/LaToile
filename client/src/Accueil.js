@@ -1,22 +1,53 @@
 import React from 'react';
-import MainPage from './MainPage';
-import Footer from './Footer';
-import Header from './Header';
-import Login from './Login';
+import Login from './Login'
 
-const Accueil = () => {
-    return (
+/*const Accueil = (props) =>*/
+class Accueil extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            page: '',
+        }
+    }
+
+    connexion = (l) => {
         <div>
-        <h1>LaToile !</h1>
-        <Header/>
-        <div className="accueil">
-            <div className="leftBox">
-                <p className="btn-welcome"></p>
-            </div>
-            
-            </div>
-            <Footer/>
+            <p> l</p>
+       
         </div>
+    }
+
+
+    accesAuformulaireL = (e) => {
+        
+        //this.setState({ page: 'login' })
+        //console.log(this.state.page)
+       console.log(this.props.acces('login'))
+    }
+    accesAuformulaireI = (e) => {
+
+        //this.setState({ page: 'login' })
+        //console.log(this.state.page)
+        console.log(this.props.acces('signup'))
+    }
+    render() {
+        return (
+            <div className="Accueil">
+                <div className="btns">
+                    <p>Bonjour! Soyez les bienvenues !</p>
+
+                    <button onClick={this.accesAuformulaireI} className="btn-welcome">INSCRIPTION</button>
+                    <button onClick={this.accesAuformulaireL} className="btn-welcome" >CONNEXION</button>
+                </div>
+               
+
+            </div>
+
         );
+
+    }
+
 }
-export default Accueil;
+
+
+export default Accueil

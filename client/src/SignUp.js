@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import './App.css';
 import axios from 'axios';
-import putUser from './putUser'
 
 class SignUp extends React.Component {
     
@@ -15,51 +14,101 @@ class SignUp extends React.Component {
         }
     }
     
+    setLastname = (e) => {
+        this.setState({lastname: e.currentTarget.value})
+    }
+    setFirstname = (e) => {
+        this.setState({firstname: e.currentTarget.value})
+    }
+    setLogin = (e) => {
+        this.setState({login: e.currentTarget.value})
+    }
+    setPassword = (e) => {
+        this.setState({password: e.currentTarget.value})
+    }
+    
+
+
+    changeHandler = (e) => {
+        this.setState({[e.target.name]: e.target.value})
+    }
+    
+    submitHandler = (e) => {
+        e.preventDefault()
+        console.log(this.state)
+        const login = this.state.login;
+        const password = this.state.password;
+        const lastname = this.state.lastname;
+        const firstname = this.state.firstname;
+        console.log("login = ",login);
+        console.log("password = ",password);
+        console.log("lastname = ",lastname);
+        console.log("firstname = ",firstname);
+        this.props.outil(this.state.login, this.state.password, this.state.lastname, this.state.firstname);
+    }
+    
     render() {
         return ( <div className="LoginForm">
             <h2>Inscription</h2>
-            <form action="../api/user" method="put" class="form">
+            <form onSubmit={this.submitHandler} >
 
                 <div class="col-1">
                     <label for="lastname"> Lastname</label>
-                    <input 
+                    <input
+                        placeholder="lastname"
+                        value={this.state.lastname}
                         type="text" 
                         id="lastname" 
                         name="lastname" 
-                        onChange={(e) => this.setState({lastname: e.target.value}) }
+                        onChange={ this.changeHandler }
                     />
                 </div>
                 <div>
                     <label for="firstname"> Firstname</label>
-                    <input type="text" 
+                    <input
+                        placeholder="firstname"
+                        value={this.state.firstname}
+                        type="text" 
                         id="firstname" 
                         name="firstname"
-                        onChange={(e) => this.setState({firstname: e.target.value}) }
+                        onChange={ this.changeHandler }
                     />
                 </div>
                 <div>
                     <label for="login_in">  Login </label>
-                    <input type="text" 
+                    <input
+                        placeholder="login"
+                        value={this.state.login}
+                        type="text" 
                         id="login_in" 
                         name="login"
-                        onChange={(e) => this.setState({login: e.target.value}) }
+                        onChange={ this.changeHandler }
                     />
                 </div>
                 <div>
                     <label for="password_in">Password</label>
-                    <input type="password" 
+                    <input
+                        placeholder="password"
+                        value={this.state.password}
+                        type="password" 
                         id="password_in" 
                         name="password"
-                        onChange={(e) => this.setState({password: e.target.value}) }
+                        onChange={ this.changeHandler }
                     />
                 </div>
                 <div class="button">
-                    <button 
-                        type="submit"
-                        onClick={putUser(this.state.login, this.state.password, this.state.lastname, this.state.firstname)} >S'inscrire</button>
+                    <button>S'inscrire</button>
                 </div>
             </form>
-        </div>)
+            <div><p>Pas encore inscrit ? veuillez retourner </p>
+                    <button 
+                        type="onclick" 
+                        onClick={ ()=>{ this.props.acces('Accueil') } }>
+                        <span> Retour </span>
+                    </button>
+                </div>
+        </div>
+        )
     }
 
 }
