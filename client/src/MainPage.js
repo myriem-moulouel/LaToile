@@ -7,7 +7,9 @@ import Login from './Login';
 import Footer from './Footer';
 import Header from './Header';
 import Myaccueil from './Myaccueil';
+import Logout from './Logout'
 import axios from 'axios';
+import { NoEncryption } from '@material-ui/icons';
 
 class MainPage extends React.Component {
   
@@ -17,8 +19,8 @@ class MainPage extends React.Component {
             currentPage: 'Accueil', // valeurs possibles: 'login', 'messages', 'signin',
             isConnected: false,
             login: -1,
+            password: 'node',
 
-            restorer:false,
             lastname: 'none',
             firstname: 'none',
             
@@ -33,7 +35,7 @@ class MainPage extends React.Component {
     });
 
     accesCurrentPage = (l) => {
-        console.log(Accueil)
+        console.log(this.state.currentPage)
         this.setState({ currentPage:l})
     }
 
@@ -67,11 +69,21 @@ class MainPage extends React.Component {
                 this.setState({
                     isConnected: true,
                     currentPage: 'Myaccueil',
-                    login: l
+                    login: l,
+                    password: p
             });
             console.log("oualala", res.data); // à tester la première fois pour voir ce que retourne le serveur
         })
         .catch((error) => {
+            this.setState({
+                isConnected: false,
+                currentPage: 'Accueil',
+                login: -1,
+                password: 'none',
+                lastname: 'none',
+                firstname: 'none',
+                activate: 'Home'
+            })
             console.log("mmmmmmmmmmmmmm", error);
         });
     }
@@ -86,7 +98,8 @@ class MainPage extends React.Component {
                     currentPage: 'Myaccueil',
                     login: l,
                     lastname: nom,
-                    firstname: prenom
+                    firstname: prenom,
+                    password: p
                 });
                 console.log("oualala", res.data); // à tester la première fois pour voir ce que retourne le serveur
             })
@@ -96,10 +109,23 @@ class MainPage extends React.Component {
     }
 
     setLogout = () => {
-        this.setState({
-            isConnected: false,
-            currentPage: 'login',
-        });
+        this.response.get(`/user/${this.state.login}/logout`)
+            .then(res => {
+                console.log(`${this.state.login}`)
+                this.setState({
+                    idConnected: false,
+                    currentPage: 'Accueil',
+                    login: -1,
+                    password: 'none',
+                    lastname: 'none',
+                    firstname: 'none',
+                    activate: 'Home'
+                });
+                console.log('je me suis deconnecte !');
+            })
+            .catch((error) => {
+                console.log("erreur dans logout ", error)
+            })
     }
     
     getUser = (l) => {
@@ -125,24 +151,65 @@ class MainPage extends React.Component {
     this.setState({ currentPage: 'signup' });
   }
 
+    deleteUser = () => {
+        console.log("password = ",this.state.password);
+        const password = this.state.password;
+        this.response.delete(`/user/${this.state.login}`,{"login": this.state.login, "password": password })
+            .then(res => {
+                this.setState({
+                    isConnected: false,
+                    currentPage: 'Accueil',
+                    login: -1,
+                    lastname: 'none',
+                    firstname: 'none',
+                    password: 'none'
+                })
+                console.log("deleteUser res = ", res.data)
+            })
+            .catch((error) => {
+                console.log("une erreur dans deleteUser ", error)
+            })
+    }
+
     
 
     render() {
-        const { isConnected, currentPage } = this.state;
-
         return <div>
             <main>
                 <Header />
-                    {currentPage === 'Accueil'
+                    {this.state.currentPage === 'Accueil'
                         && <Accueil acces={ this.accesCurrentPage} />}
-                    {currentPage === 'login'
-                        && <Login outil={this.setConnected} acces={ this.accesCurrentPage} searching={this.getUser} />}
-                    {currentPage === 'signup'
-                        && <SignUp outil={this.putUser} acces={ this.accesCurrentPage} searching={this.getUser} />}
-                    {currentPage === 'Myaccueil'
-                        && <Myaccueil login={this.state.login} firstname={this.state.firstname} lastname={this.state.lastname} activate={this.state.activate} setHome={this.setHome} setProfile={this.setProfile} />}
-                    {currentPage === 'messages'
-                    && <MessagesPage lastname={this.state.lastname} firstname={this.state.firstname} login={this.state.login} activate={this.state.activate} />}
+                    {this.state.currentPage === 'login'
+                        && <Login 
+                                outil={this.setConnected} 
+                                acces={ this.accesCurrentPage} 
+                                searching={this.getUser} 
+                                logout={this.setLogout} 
+                    />}
+                    {this.state.currentPage === 'signup'
+                        && <SignUp 
+                                    outil={this.putUser} 
+                                    acces={ this.accesCurrentPage} 
+                                    searching={this.getUser} 
+                    />}
+                    {this.state.currentPage === 'Myaccueil'
+                        && <Myaccueil login={this.state.login} 
+                                    firstname={this.state.firstname} 
+                                    lastname={this.state.lastname} 
+                                    activate={this.state.activate} 
+                                    setHome={this.setHome} 
+                                    setProfile={this.setProfile}
+                                    setLogout={this.setLogout} 
+                                    deleteUser={this.deleteUser}
+                    />}
+                    {this.state.currentPage === 'messages'
+                        && <MessagesPage 
+                                    lastname={this.state.lastname} 
+                                    firstname={this.state.firstname} 
+                                    login={this.state.login} 
+                                    activate={this.state.activate} 
+                                    logout={this.logout} 
+                    />}
             <h3>Venez nombreux communauté bienveillante :)</h3>
             <Footer />
         </main>

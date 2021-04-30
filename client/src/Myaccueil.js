@@ -10,7 +10,7 @@ class Myaccueil extends React.Component {
         return <div>
             <h5>Bienvenue : {this.props.login} {this.props.firstname} {this.props.lastname} </h5>
             <Feed lastname={this.props.lastname} firstname={this.props.firstname} login={this.props.login} />
-            <BarreGauche activate={this.props.activate} accedeHome={this.props.setHome} accedeProfile={this.props.setProfile}/>
+            <BarreGauche activate={this.props.activate} accedeHome={this.props.setHome} accedeProfile={this.props.setProfile} setLogout={this.props.setLogout} deleteUser={this.props.deleteUser} />
             <Widgets />
             
         </div>

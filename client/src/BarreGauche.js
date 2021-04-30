@@ -24,7 +24,7 @@ const tweetBox = () => {
     return <TweetBox />
 }
 
-function BarreGauche({ activate, accedeHome, accedeProfile }) {
+function BarreGauche({ activate, accedeHome, accedeProfile, setLogout, deleteUser }) {
     return (
         <div className="barre" style={{width: 300, minHeight: 100 }}>
             <GoZap className="barre__twitterIcon" />
@@ -35,8 +35,8 @@ function BarreGauche({ activate, accedeHome, accedeProfile }) {
                 <BarreOption Icon={MailOutlineIcon} text="Messages" />
                 <BarreOption Icon={Group} text="Followers" />
                 <BarreOption Icon={GroupAdd} text="Followings" />
-                <BarreOption Icon={PersonAddDisabledIcon} text="Delete account" />
-                <BarreOption Icon={ExitToAppIcon} text="Exit" />
+                <BarreOption Icon={PersonAddDisabledIcon} text="Delete account" accede={deleteUser} />
+                <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
                 
                 </div>
             }
@@ -47,8 +47,8 @@ function BarreGauche({ activate, accedeHome, accedeProfile }) {
                 <BarreOption Icon={MailOutlineIcon} text="Messages" />
                 <BarreOption Icon={Group} text="followers" />
                 <BarreOption Icon={GroupAdd} text="followings" />
-                <BarreOption Icon={PersonAddDisabledIcon} text="delete account" />
-                <BarreOption Icon={ExitToAppIcon} text="Exit" />
+                <BarreOption Icon={PersonAddDisabledIcon} text="delete account" accede={deleteUser} />
+                <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
                 </div>
             }
             {/* Button -> Tweet */}
