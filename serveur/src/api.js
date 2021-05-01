@@ -37,8 +37,9 @@ function init(dbUsers, dbMessages) {
                 });
                 return;
             }
-            if(! await users.exists(login)) {
-                console.log(users.exists(login));
+            const userExist = await users.exists(login);
+            if(! userExist) {
+                console.log(userExist);
                 res.status(401).json({
                     status: 401,
                     message: "Utilisateur inconnu"
@@ -46,7 +47,17 @@ function init(dbUsers, dbMessages) {
                 return;
             }
             let userid = await users.checkpassword(login, password);
-            if (userid) {
+            console.log(userid);
+            if(!userid){
+                console.log("password invalide");
+                // Faux login : destruction de la session et erreur
+                req.session.destroy((err) => { });
+                res.status(403).json({
+                    status: 403,
+                    message: "login et/ou le mot de passe invalide(s)"
+                });
+                return;
+            }else {
                 // Avec middleware express-session
                 req.session.regenerate(function (err) {
                     if (err) {
@@ -54,6 +65,7 @@ function init(dbUsers, dbMessages) {
                             status: 500,
                             message: "Erreur interne"
                         });
+                        return err;
                     }
                     else {
                         // C'est bon, nouvelle session créée
@@ -67,13 +79,7 @@ function init(dbUsers, dbMessages) {
                 //console.log(req.session.cookie);
                 return;
             }
-            // Faux login : destruction de la session et erreur
-            req.session.destroy((err) => { });
-            res.status(403).json({
-                status: 403,
-                message: "login et/ou le mot de passe invalide(s)"
-            });
-            return;
+            
         }
         catch (e) {
             // Toute autre erreur
@@ -88,17 +94,24 @@ function init(dbUsers, dbMessages) {
     //to logout
     router.get('/user/:user_id/logout', (req, res) => { //   DECONNECTION!!!!
         
-        req.session.destroy((err) => { });
-        res.status(202).json({
-            status: 202,
-            message: "vous vous etes deconnecter "
+        req.session.destroy((err) => {
+            console.log(req.sessionID); 
+            if(err){
+                console.log(err);
+            }else{
+                console.log("pas d'erreur dans logout");
+                res.status(202).json({
+                    status: 202,
+                    message: "vous vous etes deconnecter "
+                });
+                return;
+               res.send('Vous etes deconnecter');
+               res.redirect('/users/login');
+            }
         });
-        return;
-       res.send('Vous etes deconnecter');
-       res.redirect('/users/loggin');
     });
 
-    router.post("/follow/add/:user_id", (req, res) => { // Inscription 
+    /*router.post("/follow/add/:user_id", (req, res) => { // Inscription 
         //const { login} = req.body;
         //console.log("je suis la")
         //console.log(login)
@@ -118,7 +131,7 @@ function init(dbUsers, dbMessages) {
             }
 
 
-        })
+        })*/
 
  /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -339,24 +352,26 @@ function init(dbUsers, dbMessages) {
                 res.status(500).send(e)
             }
         })
+    router.route("/user")
         .delete(async (req, res) => {
             try{
-                console.log(req.params.user_id);
-                const para = req.body;
-                console.log("apres le print")
-                const existUser = await users.exists(req.params.user_id);
+                const { login, password } = req.body;
+                console.log("apres le print ", password)
+                const existUser = await users.exists(login);
                 console.log('apres le exist');
                 if(!existUser){
                     res.status(404)
-                    .send(`user '${req.params.user_id}' not existant !`);
+                    .send(`user '${login}' not existant !`);
                 }else{
-                    const passwordCheck = await users.checkpassword(req.params.user_id, para.password);
+                    console.log("je suis dans api delete user");
+                    console.log(req.body);
+                    const passwordCheck = await users.checkpassword(login, password);
                     if(!passwordCheck){
                         res.status(406)
                         .send(`password incorrect !`);
                     }else{
                         console.log("il existe bien ==================");
-                        users.deleteUser(req.params.user_id, para.password)
+                        users.deleteUser(login, password)
                         .then((user_id) => res.send(`delete user ${user_id} succeded`))
                         .catch((err) => res.status(500).send('delete invalide'));
                     }

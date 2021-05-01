@@ -86,11 +86,14 @@ class Users {
 
   checkpassword(login, password) {
     return new Promise((resolve, reject) => {
-      const checkLoginPwd = `SELECT login FROM users WHERE login = '${login}' and password = '${password}'`;
-      this.db.get(checkLoginPwd, function(err, row){
+      const checkLoginPwd = `SELECT login FROM users WHERE login = '${login}' and password = ?`;
+      console.log(password)
+      this.db.get(checkLoginPwd, [password], function(err, row){
         if(err){
+          console.log("err = ",err);
           reject(err);
         }else{
+          console.log("row = ",row)
           resolve(row != undefined);
         }
       })

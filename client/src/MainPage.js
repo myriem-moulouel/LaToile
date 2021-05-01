@@ -19,7 +19,7 @@ class MainPage extends React.Component {
             currentPage: 'Accueil', // valeurs possibles: 'login', 'messages', 'signin',
             isConnected: false,
             login: -1,
-            password: 'node',
+            password: 'none',
 
             lastname: 'none',
             firstname: 'none',
@@ -59,6 +59,18 @@ class MainPage extends React.Component {
     }
     setProfile = () => {
         this.setState({ activate: 'Profile'})
+    }
+
+    setMessages = () => {
+        this.setState({ activate: 'Messages'})
+    }
+
+    setFollowers = () => {
+        this.setState({ activate: 'Followers'})
+    }
+
+    setFollowings = () => {
+        this.setState({ activate: 'Followings'})
     }
 
     setConnected = (l, p ) => {
@@ -104,6 +116,14 @@ class MainPage extends React.Component {
                 console.log("oualala", res.data); // à tester la première fois pour voir ce que retourne le serveur
             })
             .catch((error) => {
+                this.setState({
+                    isConnected: false,
+                    currentPage: 'Accueil',
+                    login: 'none',
+                    lastname: 'none',
+                    firstname: 'none',
+                    password: 'none'
+                });
                 console.log("mmmmmmhhhhhhhhhmmmm", error);
             });
     }
@@ -134,9 +154,7 @@ class MainPage extends React.Component {
             .then(res => {
                 console.log("res = ",res);
                 this.setState({
-                    currentPage: 'Myaccueil',
                     login: res.data.login,
-                    password: res.data.password,
                     lastname: res.data.lastname,
                     firstname: res.data.firstname
                 })
@@ -154,7 +172,7 @@ class MainPage extends React.Component {
     deleteUser = () => {
         console.log("password = ",this.state.password);
         const password = this.state.password;
-        this.response.delete(`/user/${this.state.login}`,{"login": this.state.login, "password": password })
+        this.response.delete('/user',{ "login": this.state.login, "password": password })
             .then(res => {
                 this.setState({
                     isConnected: false,
@@ -199,6 +217,9 @@ class MainPage extends React.Component {
                                     activate={this.state.activate} 
                                     setHome={this.setHome} 
                                     setProfile={this.setProfile}
+                                    setMessages={this.setMessages}
+                                    setFollowers={this.setFollowers}
+                                    setFollowings={this.setFollowings}
                                     setLogout={this.setLogout} 
                                     deleteUser={this.deleteUser}
                     />}

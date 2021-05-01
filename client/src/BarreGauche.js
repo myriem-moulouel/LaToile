@@ -19,42 +19,102 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { TiGroupOutline, TiGroup } from "react-icons/ti";
 
 import TweetBox from './TweetBox';
+import './Myaccueil.css'
+import Page from './Page'
 
 const tweetBox = () => {
     return <TweetBox />
 }
 
-function BarreGauche({ activate, accedeHome, accedeProfile, setLogout, deleteUser }) {
+function BarreGauche({ activate, accedeHome, accedeProfile, accedeMessages, accedeFollowers, accedeFollowings, setLogout, deleteUser, lastname, firstname, login }) {
+    console.log(activate);
     return (
-        <div className="barre" style={{width: 300, minHeight: 100 }}>
-            <GoZap className="barre__twitterIcon" />
-            { activate === 'Home' && 
+        <div>
+            <div className="Myaccueil">
+                { activate === 'Home' && 
+                    <div className="barre">
+                        <GoZap className="barre__twitterIcon" />
+                        <BarreOption active Icon={HomeIcon} text="Home" accede={accedeHome} />
+                        <BarreOption Icon={PermIdentityIcon} text="Profile" accede={accedeProfile}/>
+                        <BarreOption Icon={MailOutlineIcon} text="Messages" accede={accedeMessages} />
+                        <BarreOption Icon={Group} text="Followers" accede={accedeFollowers} />
+                        <BarreOption Icon={GroupAdd} text="Followings" accede={accedeFollowings} />
+                        <BarreOption Icon={PersonAddDisabledIcon} text="Delete account" accede={deleteUser} />
+                        <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
+                        {/* Button -> Tweet */}
+                        <Button variant="outlined" className="barre__tweet" fullWidth type="submit" onClick={tweetBox}> 
+                            Tweet
+                        </Button>
+                    </div>
+                }
+                { activate === 'Profile' &&
+                    <div className="barre">
+                        <GoZap className="barre__twitterIcon" />
+                        <BarreOption Icon={HomeIcon} text="Home" accede={accedeHome} />
+                        <BarreOption active Icon={PermIdentityIcon} text="Profile" accede={accedeProfile} />
+                        <BarreOption Icon={MailOutlineIcon} text="Messages" accede={accedeMessages} />
+                        <BarreOption Icon={Group} text="Followers" accede={accedeFollowers} />
+                        <BarreOption Icon={GroupAdd} text="Followings" accede={accedeFollowings} />
+                        <BarreOption Icon={PersonAddDisabledIcon} text="Delete account" accede={deleteUser} />
+                        <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
+                        {/* Button -> Tweet */}
+                        <Button variant="outlined" className="barre__tweet" fullWidth type="submit" onClick={tweetBox}> 
+                            Tweet
+                        </Button>
+                    </div>
+                }
+                { activate === 'Messages' &&
+                    <div className="barre">
+                        <GoZap className="barre__twitterIcon" />
+                        <BarreOption Icon={HomeIcon} text="Home" accede={accedeHome} />
+                        <BarreOption Icon={PermIdentityIcon} text="Profile" accede={accedeProfile} />
+                        <BarreOption active Icon={MailOutlineIcon} text="Messages" accede={accedeMessages} />
+                        <BarreOption Icon={Group} text="Followers" accede={accedeFollowers} />
+                        <BarreOption Icon={GroupAdd} text="Followings" accede={accedeFollowings} />
+                        <BarreOption Icon={PersonAddDisabledIcon} text="Delete account" accede={deleteUser} />
+                        <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
+                        {/* Button -> Tweet */}
+                        <Button variant="outlined" className="barre__tweet" fullWidth type="submit" onClick={tweetBox}> 
+                            Tweet
+                        </Button>
+                    </div>
+                }
+                { activate === 'Followers' &&
+                    <div className="barre">
+                        <GoZap className="barre__twitterIcon" />
+                        <BarreOption Icon={HomeIcon} text="Home" accede={accedeHome} />
+                        <BarreOption Icon={PermIdentityIcon} text="Profile" accede={accedeProfile} />
+                        <BarreOption Icon={MailOutlineIcon} text="Messages" accede={accedeMessages} />
+                        <BarreOption active Icon={Group} text="Followers" accede={accedeFollowers} />
+                        <BarreOption Icon={GroupAdd} text="Followings" accede={accedeFollowings} />
+                        <BarreOption Icon={PersonAddDisabledIcon} text="Delete account" accede={deleteUser} />
+                        <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
+                        {/* Button -> Tweet */}
+                        <Button variant="outlined" className="barre__tweet" fullWidth type="submit" onClick={tweetBox}> 
+                            Tweet
+                        </Button>
+                    </div>
+                }
+                { activate === 'Followings' &&
+                    <div className="barre">
+                        <GoZap className="barre__twitterIcon" />
+                        <BarreOption Icon={HomeIcon} text="Home" accede={accedeHome} />
+                        <BarreOption Icon={PermIdentityIcon} text="Profile" accede={accedeProfile} />
+                        <BarreOption Icon={MailOutlineIcon} text="Messages" accede={accedeMessages} />
+                        <BarreOption Icon={Group} text="Followers" accede={accedeFollowers} />
+                        <BarreOption active Icon={GroupAdd} text="Followings" accede={accedeFollowings} />
+                        <BarreOption Icon={PersonAddDisabledIcon} text="Delete account" accede={deleteUser} />
+                        <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
+                        {/* Button -> Tweet */}
+                        <Button variant="outlined" className="barre__tweet" fullWidth type="submit" onClick={tweetBox}> 
+                            Tweet
+                        </Button>
+                    </div>
+                }
                 <div>
-                <BarreOption active Icon={HomeIcon} text="Home" accede={accedeHome} />
-                <BarreOption Icon={PermIdentityIcon} text="Profile" accede={accedeProfile}/>
-                <BarreOption Icon={MailOutlineIcon} text="Messages" />
-                <BarreOption Icon={Group} text="Followers" />
-                <BarreOption Icon={GroupAdd} text="Followings" />
-                <BarreOption Icon={PersonAddDisabledIcon} text="Delete account" accede={deleteUser} />
-                <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
-                
-                </div>
-            }
-            { activate === 'Profile' &&
-                <div>
-                <BarreOption Icon={HomeIcon} text="Home" accede={accedeHome} />
-                <BarreOption active Icon={PermIdentityIcon} text="Profile" accede={accedeProfile} />
-                <BarreOption Icon={MailOutlineIcon} text="Messages" />
-                <BarreOption Icon={Group} text="followers" />
-                <BarreOption Icon={GroupAdd} text="followings" />
-                <BarreOption Icon={PersonAddDisabledIcon} text="delete account" accede={deleteUser} />
-                <BarreOption Icon={ExitToAppIcon} text="Exit" accede={setLogout} />
-                </div>
-            }
-            {/* Button -> Tweet */}
-            <Button variant="outlined" className="barre__tweet" fullWidth type="submit" onClick={tweetBox}> 
-                Tweet
-            </Button>
+                    <Page activate={activate} lastname={lastname} firstname={firstname} login={login}/>
+                </div>   
+            </div>
         </div>
     );
 };
