@@ -141,7 +141,7 @@ function init(dbUsers, dbMessages) {
 
     //commmande http localhost:api/user/friend/x login=y
     //x suit y
-    router.post("/user/follow/:user_id(\\d+)", async (req, res) => { 
+    router.post("/user/follow/:user_id", async (req, res) => { 
         // Inscription 
         const ami = req.body; 
         //console.log("je suis la") 
@@ -173,7 +173,7 @@ function init(dbUsers, dbMessages) {
                                             SERVICE   =>           UNFOLLOW FRIEND
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    router.delete('/user/unfollow/:user_id(\\d+)', async (req, res) =>{
+    router.delete('/user/unfollow/:user_id', async (req, res) =>{
         const ami = req.body;
         console.log(ami.login)
         let amis = await users.exists(ami.login)
@@ -202,7 +202,7 @@ function init(dbUsers, dbMessages) {
                                             SERVICE   =>           GETFOLLOWINGS
 
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    router.get('/user/allfollowing/:user_id(\\d+)', async (req,res) => {
+    router.get('/user/allfollowing/:user_id', async (req,res) => {
         const user = await users.exists(req.params.user_id);
         if(! user){
             res.status(401).json({
@@ -221,7 +221,7 @@ function init(dbUsers, dbMessages) {
                                             SERVICE   =>           GETFOLLOWERS
 
     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-    router.get('/user/allfollower/:user_id(\\d+)', async (req,res) => {
+    router.get('/user/allfollower/:user_id', async (req,res) => {
         const user = await users.exists(req.params.user_id);
         if(! user){
             res.status(401).json({
@@ -241,7 +241,7 @@ function init(dbUsers, dbMessages) {
 
     ------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-        router.post('/message/add/:id(\\d+)', async(req,res)=>{
+        router.post('/message/add/:id', async(req,res)=>{
             //const id=req.session.login;
             let user= await users.exists(req.params.id)
             const msg=req.body.message;
@@ -334,7 +334,7 @@ function init(dbUsers, dbMessages) {
  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
     router
-        .route("/user/:user_id(\\d+)")
+        .route("/user/:user_id")
         .get(async (req, res) => {
             try {
                 console.log(`y-t-il l'utilisateur '${req.params.user_id}' ?`);
@@ -384,7 +384,7 @@ function init(dbUsers, dbMessages) {
 
     //afficher
     router
-        .route("/profile/followings/:user_id(\\d+)")
+        .route("/profile/followings/:user_id")
         .get(async (req, res) => {
             try {
                 console.log(`y-t-il l'utilisateur '${req.params.user_id}' ?`);

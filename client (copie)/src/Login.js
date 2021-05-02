@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import './Login.css';
 
 class Login extends Component {
 
@@ -33,10 +33,10 @@ class Login extends Component {
     }
   
     render() {
-        return <div className="LoginForm">
+        return <div className="login">
             <h2>Connexion</h2>
             <form onSubmit={this.submit}>
-                <div class="elemform">
+                <div className="elemform">
                     <label for="login">  Login </label>
                     <input 
                     type="text" 
@@ -45,7 +45,7 @@ class Login extends Component {
                     onChange={ this.handleChangeL } 
                     value={this.state.login}/>
                 </div>
-                <div class="elemform">
+                <div className="elemform">
                     <label for="password">Password</label>
                     <input 
                         type="password" 
@@ -54,15 +54,16 @@ class Login extends Component {
                         onChange={ this.handleChangeP }
                         value={this.state.password}/>
                 </div>    
-                <div class="button">
+                <div className="button">
                     <button>Connexion</button>
                 </div>
             </form>
-                <div><p>Pas encore inscrit ? veuillez retourner </p>
+                <div>
                     <button 
+                        className="button-pas-encore-inscrit"
                         type="onclick" 
-                        onClick={ ()=>{ this.props.acces('Accueil') } }>
-                        <span> Retour </span>
+                        onClick={ ()=>{ this.props.acces('FirstPage') } }>
+                        <span>Pas encore inscrit ?</span>
                     </button>
                 </div>
         </div>;

@@ -1,7 +1,7 @@
 import React from 'react';
 import MessagesPage from './MessagesPage';
 import SignUp from './SignUp';
-import Accueil from './Accueil';
+import FirstPage from './FirstPage';
 import Login from './Login';
 import Footer from './Footer';
 import Header from './Header';
@@ -13,14 +13,15 @@ class MainPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentPage: 'Accueil', // valeurs possibles: 'login', 'messages', 'signin',
+            currentPage: 'FirstPage', // valeurs possibles: 'login', 'messages', 'signin',
             isConnected: false,
             login: -1,
             password: 'none',
 
             lastname: 'none',
             firstname: 'none',
-            
+            msg: [],
+
             activate: 'Home'
         }
     }
@@ -86,7 +87,7 @@ class MainPage extends React.Component {
         .catch((error) => {
             this.setState({
                 isConnected: false,
-                currentPage: 'Accueil',
+                currentPage: 'FirstPage',
                 login: -1,
                 password: 'none',
                 lastname: 'none',
@@ -115,7 +116,7 @@ class MainPage extends React.Component {
             .catch((error) => {
                 this.setState({
                     isConnected: false,
-                    currentPage: 'Accueil',
+                    currentPage: 'FirstPage',
                     login: 'none',
                     lastname: 'none',
                     firstname: 'none',
@@ -131,7 +132,7 @@ class MainPage extends React.Component {
                 console.log(`${this.state.login}`)
                 this.setState({
                     idConnected: false,
-                    currentPage: 'Accueil',
+                    currentPage: 'FirstPage',
                     login: -1,
                     password: 'none',
                     lastname: 'none',
@@ -173,7 +174,7 @@ class MainPage extends React.Component {
             .then(res => {
                 this.setState({
                     isConnected: false,
-                    currentPage: 'Accueil',
+                    currentPage: 'FirstPage',
                     login: -1,
                     lastname: 'none',
                     firstname: 'none',
@@ -185,6 +186,40 @@ class MainPage extends React.Component {
                 console.log("une erreur dans deleteUser ", error)
             })
     }
+    
+    getMessage(login) {
+        return new Promise((resolve, reject) => {
+            console.log(`Je suis dens le getMessage : ${login}`)
+            this.dbMessages.find({login}, (err, docs) => {
+                if (err) {
+                    reject(err);
+                }
+
+                else {
+                    console.log('je suis dans le resolve ')
+                    console.log('found', docs);
+                    resolve(docs);
+                }
+
+            })
+        });
+    }
+
+    addMessage=(login,msg)=>{
+        this.response.post(`/message/add/${login}`,{"message":msg})
+        .then(res => {
+
+            this.setState({
+                isConnected: true,
+                currentPage: 'Myaccueil',
+                login: login,
+            });
+           // console.log("oualala", res.data); // � tester la premi�re fois pour voir ce que retourne le serveur
+        })
+     .catch((error) => {
+           console.log("mmmmmmmmmmmmm", error);
+        });
+    }
 
     
 
@@ -192,43 +227,42 @@ class MainPage extends React.Component {
         return <div>
             <main>
                 <Header />
-                    {this.state.currentPage === 'Accueil'
-                        && <Accueil acces={ this.accesCurrentPage} />}
-                    {this.state.currentPage === 'login'
-                        && <Login 
-                                outil={this.setConnected} 
+                {this.state.currentPage === 'FirstPage'
+                    && <FirstPage acces={ this.accesCurrentPage} />}
+                {this.state.currentPage === 'login'
+                    && <Login 
+                            outil={this.setConnected} 
+                            acces={ this.accesCurrentPage} 
+                            searching={this.getUser} 
+                            logout={this.setLogout} 
+                />}
+                {this.state.currentPage === 'signup'
+                    && <SignUp 
+                                outil={this.putUser} 
                                 acces={ this.accesCurrentPage} 
                                 searching={this.getUser} 
-                                logout={this.setLogout} 
-                    />}
-                    {this.state.currentPage === 'signup'
-                        && <SignUp 
-                                    outil={this.putUser} 
-                                    acces={ this.accesCurrentPage} 
-                                    searching={this.getUser} 
-                    />}
-                    {this.state.currentPage === 'Myaccueil'
-                        && <Myaccueil login={this.state.login} 
-                                    firstname={this.state.firstname} 
-                                    lastname={this.state.lastname} 
-                                    activate={this.state.activate} 
-                                    setHome={this.setHome} 
-                                    setProfile={this.setProfile}
-                                    setMessages={this.setMessages}
-                                    setFollowers={this.setFollowers}
-                                    setFollowings={this.setFollowings}
-                                    setLogout={this.setLogout} 
-                                    deleteUser={this.deleteUser}
-                    />}
-                    {this.state.currentPage === 'messages'
-                        && <MessagesPage 
-                                    lastname={this.state.lastname} 
-                                    firstname={this.state.firstname} 
-                                    login={this.state.login} 
-                                    activate={this.state.activate} 
-                                    logout={this.logout} 
-                    />}
-            <h3>Venez nombreux communauté bienveillante :)</h3>
+                />}
+                {this.state.currentPage === 'Myaccueil'
+                    && <Myaccueil login={this.state.login} 
+                                firstname={this.state.firstname} 
+                                lastname={this.state.lastname} 
+                                activate={this.state.activate} 
+                                setHome={this.setHome} 
+                                setProfile={this.setProfile}
+                                setMessages={this.setMessages}
+                                setFollowers={this.setFollowers}
+                                setFollowings={this.setFollowings}
+                                setLogout={this.setLogout} 
+                                deleteUser={this.deleteUser}
+                />}
+                {this.state.currentPage === 'messages'
+                    && <MessagesPage 
+                                lastname={this.state.lastname} 
+                                firstname={this.state.firstname} 
+                                login={this.state.login} 
+                                activate={this.state.activate} 
+                                logout={this.logout} 
+                />}
             <Footer />
         </main>
       </div>

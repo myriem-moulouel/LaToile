@@ -1,0 +1,26 @@
+.barreOption {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.barreOption:hover {
+  background-color: #c0f0f8;
+  border-radius: 30px;
+  color: var(--twitter-color);
+  transition: color 1ms ease-out;
+}
+
+.barreOption > .MuiSvgIcon-root {
+  padding: 20px;
+}
+
+.barreOption > h2 {
+  font-weight: 800;
+  font-size: 20px;
+  margin-right: 20px;
+}
+
+.barreOption--active {
+  color: var(--twitter-color);
+}
