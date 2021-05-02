@@ -1,6 +1,6 @@
 import React from 'react';
 import { GoZap } from 'react-icons/go';
-import './Header.css'
+import '../style/Header.css'
 
 const Header = () => {
     return (

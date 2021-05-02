@@ -1,5 +1,5 @@
 import React from "react";
-import "./barreOption.css";
+import "../style/barreOption.css";
 
 function barreOption({ active, text, Icon, accede }) {
   return (

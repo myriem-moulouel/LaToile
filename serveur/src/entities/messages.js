@@ -6,11 +6,13 @@ class Messages{
   }
 
   
-  insertMessage(login, mmsg){
+  insertMessage(login, mmsg, img){
     return new Promise((resolve, reject) => {
       let msg = {
         login: login,
-        message: mmsg
+        message: mmsg,
+        image: img,
+        date: new Date()
       };
       this.dbMessages.insert(msg, function(err, doc){
         if(err){
@@ -25,11 +27,12 @@ class Messages{
     })
   }
 
-  deleteMessage(login, mmsg){
+  deleteMessage(login, mmsg, img){
     return new Promise((resolve, reject) => {
       let msg = {
         login: login,
-        message: mmsg
+        message: mmsg,
+        image: img
       }
       this.dbMessages.remove(msg, (err, docs) =>{
         if(err){

@@ -1,5 +1,5 @@
 import React from "react";
-import "./barreGauche.css";
+import "../style/barreGauche.css";
 import { GoZap } from 'react-icons/go';
 import BarreOption from "./barreOption";
 import HomeIcon from "@material-ui/icons/Home";
@@ -19,7 +19,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { TiGroupOutline, TiGroup } from "react-icons/ti";
 
 import TweetBox from './TweetBox';
-import './Myaccueil.css'
+import '../style/Myaccueil.css'
 import Page from './Page'
 
 const tweetBox = () => {
@@ -112,7 +112,7 @@ function BarreGauche({ activate, accedeHome, accedeProfile, accedeMessages, acce
                     </div>
                 }
                 <div>
-                    <Page activate={activate} lastname={lastname} firstname={firstname} login={login}/>
+                    <Page activate={activate} lastname={lastname} firstname={firstname} login={login} />
                 </div>   
             </div>
         </div>

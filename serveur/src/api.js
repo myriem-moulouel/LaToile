@@ -245,6 +245,7 @@ function init(dbUsers, dbMessages) {
             //const id=req.session.login;
             let user= await users.exists(req.params.id)
             const msg=req.body.message;
+            const img=req.body.image;
             
              if(!user) {
                 res.status(401).json({
@@ -253,14 +254,26 @@ function init(dbUsers, dbMessages) {
                 });
                 return;
             }
-            if(!msg){
+            if(!msg && !img){
                 res.status(400).json({status:400, msg: "Mettez quelque chose !"});
                 return;
              }
             else{
-                message.insertMessage(req.params.id,msg)
-                .then((doc)=>res.status(201).send(`'${doc.message}' posté par '${doc.login}'`))
-                .catch((err) => res.status(500).send(err));
+                if(msg && !img){
+                    message.insertMessage(req.params.id,msg,'')
+                    .then((doc)=>res.status(201).send(`'${doc.message}' posté par '${doc.login}'`))
+                    .catch((err) => res.status(500).send(err));
+                }
+                if(!msg && img){
+                    message.insertMessage(req.params.id,'',img)
+                    .then((doc)=>res.status(201).send(`'${doc.image}' posté par '${doc.login}'`))
+                    .catch((err) => res.status(500).send(err));
+                }
+                if(msg && img){
+                    message.insertMessage(req.params.id,msg,img)
+                    .then((doc)=>res.status(201).send(`'${doc.message}' et '${doc.image}' posté par '${doc.login}'`))
+                    .catch((err) => res.status(500).send(err));
+                }
             }
         })
     
@@ -275,6 +288,7 @@ function init(dbUsers, dbMessages) {
         try{
             let login = await users.exists(req.body.login)
             const msg=req.body.message;
+            const img=req.body.image;
             
             if(!login) {
                 res.status(401).json({
@@ -294,7 +308,7 @@ function init(dbUsers, dbMessages) {
                     .send(`password incorrect ! '${req.body.login}' et '${req.body.password}'`);
                 }else{
                     console.log("il existe bien ==================");
-                    message.deleteMessage(login, msg)
+                    message.deleteMessage(login, msg, img)
                     .then((doc) => res.send(`delete of '${doc}' message succeded`))
                     .catch((err) => res.status(500).send('delete invalide'));
                 }

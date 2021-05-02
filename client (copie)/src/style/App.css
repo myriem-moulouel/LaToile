@@ -27,24 +27,6 @@ header {
     
    
 }
-.leftBox {
-    display: flex;
-    flex: 0 1 35%;
-    align-items: flex-start;
-    justify-content: flex-end;
-    background-position: center center;
-    background-image: url(images/deep.png);
-    background-repeat: no-repeat;
-    margin-left: 100px;
-    margin-bottom: 100px;
-}
-.rightBox {
-    display: flex;
-    flex: 0 1 35%;
-    align-items: flex-start;
-    margin-right: 100px;
-    margin-bottom: 100px;
-}
 /*.btn-welcome {
     border: 2px solid var(--white-color);
     color: var(--white-color);

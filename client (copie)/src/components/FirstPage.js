@@ -1,6 +1,6 @@
 import React from 'react';
-import mainImage from './images/twitter.png';
-import './FirstPage.css';
+import mainImage from '../images/twitter.png';
+import '../style/FirstPage.css';
 
 class FirstPage extends React.Component {
     constructor(props) {

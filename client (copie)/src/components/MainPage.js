@@ -1,5 +1,4 @@
 import React from 'react';
-import MessagesPage from './MessagesPage';
 import SignUp from './SignUp';
 import FirstPage from './FirstPage';
 import Login from './Login';
@@ -205,8 +204,8 @@ class MainPage extends React.Component {
         });
     }
 
-    addMessage=(login,msg)=>{
-        this.response.post(`/message/add/${login}`,{"message":msg})
+    addMessage=(login,msg,img)=>{
+        this.response.post(`/message/add/${login}`,{"message":msg,"image":img})
         .then(res => {
 
             this.setState({
@@ -254,14 +253,8 @@ class MainPage extends React.Component {
                                 setFollowings={this.setFollowings}
                                 setLogout={this.setLogout} 
                                 deleteUser={this.deleteUser}
-                />}
-                {this.state.currentPage === 'messages'
-                    && <MessagesPage 
-                                lastname={this.state.lastname} 
-                                firstname={this.state.firstname} 
-                                login={this.state.login} 
-                                activate={this.state.activate} 
-                                logout={this.logout} 
+                                addMessage={this.addMessage}
+                                getMessage={this.getMessage}
                 />}
             <Footer />
         </main>

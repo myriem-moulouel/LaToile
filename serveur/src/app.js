@@ -23,7 +23,7 @@ console.log('Creation de la base de donnees...');
 
 
 
-const dbUsers = new sqlite3.Database('./database.db', function(err) {
+const dbUsers = new sqlite3.Database('../BDDs/database.db', function(err) {
     if(err) {
         console.err('Probleme:', err);
         return err;
@@ -33,7 +33,7 @@ const dbUsers = new sqlite3.Database('./database.db', function(err) {
 
 
 
-let dbMessages = new NeDB({ filename: '/home/myriem/Documents/3I017/server/src/messages.txt', autoload: true});
+let dbMessages = new NeDB({ filename: '../BDDs/messages.txt', autoload: true});
 
 dbMessages.loadDatabase( function(err) {
     if(err){

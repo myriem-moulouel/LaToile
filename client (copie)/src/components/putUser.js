@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import '../style/App.css';
 import axios from 'axios';
 
 function putUser(login, password, lastname, firstname) {
