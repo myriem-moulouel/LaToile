@@ -1,0 +1,56 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+    margin: 20px auto 0 auto;
+}
+
+.mainImage {
+    width: 70%;
+}
+
+.birdy {
+   
+    width: 10%;
+}
+
+.firstPage {
+    display: flex;
+}
+
+.welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+h2 {
+    font-size: 31px;
+    line-height: 36px;
+    font-weight: 700;
+    font-family: TwitterChirpExtendedHeavy, Verdana, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+h3 {
+    font-size: 31px;
+    line-height: 36px;
+    font-weight: 700;
+    font-family: TwitterChirpExtendedHeavy, Verdana, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+button {
+    border: 1px solid rgba(0, 0, 0, 0);
+    color: #fff;
+    background: rgb(29, 161, 242);
+    border-radius: 9999px;
+    padding: 4px 134px;
+    font-size: 15px;
+    opacity: 0.5;
+    min-height: 48px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    line-height: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+

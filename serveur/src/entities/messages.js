@@ -6,45 +6,77 @@ class Messages{
   }
 
   
-  insertMessage(login, mmsg, img){
-    return new Promise((resolve, reject) => {
-      let msg = {
-        login: login,
-        message: mmsg,
-        image: img,
-        date: new Date()
-      };
-      this.dbMessages.insert(msg, function(err, doc){
-        if(err){
-          console.log("oulala",err);
-          reject(err);
-        }else{
-          console.log('Inserted', doc.message);
-          resolve(doc);
-        }
-        
-      })
-    })
-  }
+    insertMessage(login, mmsg, img) {
+        return new Promise((resolve, reject) => {
+            let msg = {
+                login: login,
+                message: mmsg,
+                image: img,
+                date: new Date()
+            };
+            this.dbMessages.insert(msg, function (err, doc) {
+                if (err) {
+                    console.log("oulala", err);
+                    reject(err);
+                } else {
+                    console.log('Inserted', doc.message);
+                    resolve(doc);
+                }
 
-  deleteMessage(login, mmsg, img){
+            })
+        })
+    }
+
+  deleteMessage(login, mmsg){
     return new Promise((resolve, reject) => {
-      let msg = {
-        login: login,
-        message: mmsg,
-        image: img
-      }
-      this.dbMessages.remove(msg, (err, docs) =>{
-        if(err){
-          console.log("oulala ", err);
-          reject(err);
-        }else{
-          console.log("message supprimé: ", docs);
-          resolve(docs);
-        }
-      })
+        let msg = getmsg(login,mmsg)
+       // for (i = 0; i < msg.length; i++) {
+        console.log("ici et msg= ",mg)
+            this.dbMessages.remove(msg, (err, docs) => {
+                if (err) {
+                    console.log("oulala ", err);
+                    reject(err);
+                } else {
+                    console.log("message supprimé: ", docs);
+                    resolve(docs);
+                }
+            })
+        //}
     })
   }
+    getmsg(login,msg) {
+        console.log("ici");
+        return new Promise((resolve, reject) => {
+            this.db.findOne({ login: `${login}`, message:`${msg}` }, (err, docs) => {
+                if (err) {
+                    console.log("trouve pas un tel message");
+                    reject(err);
+                }
+                else {
+                    console.log(`found ${docs}`);
+                    resolve(docs);
+                }
+
+            })
+        });
+    }
+    getMessage(login) {
+        return new Promise((resolve, reject) => {
+            console.log(`Je suis dens le getMessage : ${login}`)
+            this.dbMessages.find({login}, (err, docs) => {
+                if (err) {
+                    reject(err);
+                }
+
+                else {
+                    console.log('je suis dans le resolve ')
+                    console.log('found', docs);
+                    resolve(docs);
+                }
+                    
+            })
+        });
+    }
   
 }
 

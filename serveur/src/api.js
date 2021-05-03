@@ -19,6 +19,28 @@ function init(dbUsers, dbMessages) {
     //avec la commande http POST localhost:4000/api/user/login login=X password=XXX
     //renvoie le user s'il existe et si le motdepasse est correct
     //to login
+
+
+
+    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+                                                SERVICE   =>           CREATION D'UN UTILISATEUR
+    
+     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.put("/user", (req, res) => {
+        console.log(req.session);
+        const { login, password, lastname, firstname } = req.body;
+        if (!login || !password || !lastname || !firstname) {
+            res.status(400).send({ "status": "error", "msg": "Missing fields" });
+        } else {
+            console.log('je suis la');
+            users.create(login, password, lastname, firstname)
+                .then((user_id) => res.status(201).send({ id: user_id }))
+                .catch((err) => { res.status(500).send(err); console.log(err) });
+        }
+    });
+
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
                                             SERVICE   =>           CONNEXION
@@ -91,7 +113,13 @@ function init(dbUsers, dbMessages) {
         }
     });
 
-    //to logout
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           DECONNECTION
+
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
     router.get('/user/:user_id/logout', (req, res) => { //   DECONNECTION!!!!
         
         req.session.destroy((err) => {
@@ -109,6 +137,46 @@ function init(dbUsers, dbMessages) {
                res.redirect('/users/login');
             }
         });
+    });
+
+
+
+    /*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE   =>           SEARCH USERS
+
+ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.get("/user/search", (req, res) => {
+        const { lastname, firstname } = req.body;
+        if (!lastname && !firstname) {
+            res.status(400).send({ "status": "erro", "msg": "aucun nom ou prenom saisi" });
+        } else {
+            users.search(lastname, firstname)
+                .then((user_id) => res.status(201).send({ id: user_id }))
+                .catch((err) => res.status(500).send(err));
+        }
+    })
+/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                          SERVICE   =>           UPDATE USER
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+    router.post("/user/:user_id", (req, res) => {
+        const { password, lastname, firstname } = req.body;
+        const login = req.params.user_id
+        console.log(req);
+        console.log(req.body);
+        console.log(req.body.params);
+        if (!login || !password || !lastname || !firstname ) {
+            res.status(400).send("Missing fields");
+        } else {
+            users.updateUser( login, password,lastname, firstname)
+                .then((user_id) => res.status(201).send({ id: req.params.user_id }))
+                .catch((err) => res.status(500).send(err));
+        }
     });
 
     /*router.post("/follow/add/:user_id", (req, res) => { // Inscription 
@@ -235,109 +303,8 @@ function init(dbUsers, dbMessages) {
         }
     })
     
-    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   
 
-                                            SERVICE =>           AJOUTER D'UN MESSAGE
-
-    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-        router.post('/message/add/:id', async(req,res)=>{
-            //const id=req.session.login;
-            let user= await users.exists(req.params.id)
-            const msg=req.body.message;
-            const img=req.body.image;
-            
-             if(!user) {
-                res.status(401).json({
-                    status: 401,
-                    message: "Utilisateur inconnu"
-                });
-                return;
-            }
-            if(!msg && !img){
-                res.status(400).json({status:400, msg: "Mettez quelque chose !"});
-                return;
-             }
-            else{
-                if(msg && !img){
-                    message.insertMessage(req.params.id,msg,'')
-                    .then((doc)=>res.status(201).send(`'${doc.message}' posté par '${doc.login}'`))
-                    .catch((err) => res.status(500).send(err));
-                }
-                if(!msg && img){
-                    message.insertMessage(req.params.id,'',img)
-                    .then((doc)=>res.status(201).send(`'${doc.image}' posté par '${doc.login}'`))
-                    .catch((err) => res.status(500).send(err));
-                }
-                if(msg && img){
-                    message.insertMessage(req.params.id,msg,img)
-                    .then((doc)=>res.status(201).send(`'${doc.message}' et '${doc.image}' posté par '${doc.login}'`))
-                    .catch((err) => res.status(500).send(err));
-                }
-            }
-        })
-    
-
-    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-                                            SERVICE =>           SUPPRIMER D'UN MESSAGE
-
-    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-    router.delete('/message/delete', async(req,res)=>{
-        try{
-            let login = await users.exists(req.body.login)
-            const msg=req.body.message;
-            const img=req.body.image;
-            
-            if(!login) {
-                res.status(401).json({
-                    status: 401,
-                    message: "Utilisateur inconnu"
-                });
-                return;
-            }
-            if(!msg){
-                res.status(400).json({status:400, msg: "Mettez quelque chose !"});
-                return;
-            }
-            else{
-                const passwordCheck = await users.checkpassword(req.body.login, req.body.password);
-                if(!passwordCheck){
-                    res.status(406)
-                    .send(`password incorrect ! '${req.body.login}' et '${req.body.password}'`);
-                }else{
-                    console.log("il existe bien ==================");
-                    message.deleteMessage(login, msg, img)
-                    .then((doc) => res.send(`delete of '${doc}' message succeded`))
-                    .catch((err) => res.status(500).send('delete invalide'));
-                }
-            }
-        }
-        catch (e) {
-            res.status(500).send(e);
-        }
-    });
-
-/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-                                            SERVICE   =>           DECONNEXION
-
- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-    router.delete('/user/logout', (req, res) => { //   DECONNECTION!!!!
-       if(typeof req.cookies['connect.sid'] !== 'undefined') {
-            console.log(req.cookies['connect.sid']);
-            req.session.destroy((err) => { });
-                res.status(202).json({
-                    status: 202,
-                    message: "vous vous etes deconnecter "
-                });
-        }   
-            
-            
-        //sres.redirect('/user/loggin');
-    });
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -366,26 +333,26 @@ function init(dbUsers, dbMessages) {
                 res.status(500).send(e)
             }
         })
-    router.route("/user")
         .delete(async (req, res) => {
             try{
-                const { login, password } = req.body;
-                console.log("apres le print ", password)
-                const existUser = await users.exists(login);
+                console.log(req.params.user_id);
+                const { password } = req.body;
+                console.log("apres le print")
+                const existUser = await users.exists(req.params.user_id);
                 console.log('apres le exist');
                 if(!existUser){
                     res.status(404)
-                    .send(`user '${login}' not existant !`);
+                    .send(`user '${req.params.user_id}' not existant !`);
                 }else{
                     console.log("je suis dans api delete user");
                     console.log(req.body);
-                    const passwordCheck = await users.checkpassword(login, password);
+                    const passwordCheck = await users.checkpassword(req.params.user_id, password);
                     if(!passwordCheck){
                         res.status(406)
                         .send(`password incorrect !`);
                     }else{
                         console.log("il existe bien ==================");
-                        users.deleteUser(login, password)
+                        users.deleteUser(req.params.user_id, para.password)
                         .then((user_id) => res.send(`delete user ${user_id} succeded`))
                         .catch((err) => res.status(500).send('delete invalide'));
                     }
@@ -396,73 +363,175 @@ function init(dbUsers, dbMessages) {
             }
         });
 
-    //afficher
-    router
-        .route("/profile/followings/:user_id")
-        .get(async (req, res) => {
-            try {
-                console.log(`y-t-il l'utilisateur '${req.params.user_id}' ?`);
-                const exist= await users.exists(req.params.user_id);
-                if(!exist)
-                    res.status(404)
-                    .send(`ùtilisateur '${req.params.user_id}' non existant`);
-                else{
-                    console.log(`les followings de '${req.params.user_id}' sont:`);
-                    let followings = await users.getFollowings(req.params.user_id)
-                    /*.forEach((row) => {
-                        console.log(row.user)
-                    })*/
-                    .then( (row) => res.status(302).send())
-                    .catch((err) => res.status(204).send(err));
-                    //console.log(followings);
 
-                    /*console.log(`les tweets '${req.params.user_id}' sont:`);
-                    let tweets = massages.getTweets(req.params.user_id)
-                    .then((user_id) => res.status(200).send(`les tweets de '${user_id}' sont recuperes`))
-                    .catch((err) => res.status(204));
-                    console.log(tweets);*/
+
+
+
+
+
+
+    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                           SERVICE =>           AJOUT D'UN MESSAGE
+
+   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.post('/message/add/:id', async (req, res) => {
+        //const id=req.session.login;
+        let user = await users.exists(req.params.id)
+        const msg = req.body.message;
+        const img = req.body.image;
+
+        if (!user) {
+            res.status(401).json({
+                status: 401,
+                message: "Utilisateur inconnu"
+            });
+            return;
+        }
+        if (!msg && !img) {
+            res.status(400).json({ status: 400, msg: "Mettez quelque chose !" });
+            return;
+        }
+        else {
+            if (msg && !img) {
+                message.insertMessage(req.params.id, msg, '')
+                    .then((doc) => res.status(201).send(`'${doc.message}' posté par '${doc.login}'`))
+                    .catch((err) => res.status(500).send(err));
+            }
+            if (!msg && img) {
+                message.insertMessage(req.params.id, '', img)
+                    .then((doc) => res.status(201).send(`'${doc.message}' posté par '${doc.login}'`))
+                    .catch((err) => res.status(500).send(err));
+            }
+            if (msg && img) {
+                message.insertMessage(req.params.id, msg, img)
+                    .then((doc) => res.status(201).send(`'${doc.message}' et '${doc.image}'posté par '${doc.login}'`))
+                    .catch((err) => res.status(500).send(err));
+            }
+        }
+    })
+
+
+    /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                            SERVICE =>           SUPPRIMER UN MESSAGE
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+    router.delete('/message/delete', async (req, res) => {
+        try {
+            let login = await users.exists(req.body.login)
+            const msg = req.body.message;
+
+            if (!login) {
+                res.status(401).json({
+                    status: 401,
+                    message: "Utilisateur inconnu"
+                });
+                return;
+            }
+            if (!msg) {
+                res.status(400).json({ status: 400, msg: "Mettez quelque chose !" });
+                return;
+            }
+            else {
+                const passwordCheck = await users.checkpassword(req.body.login, req.body.password);
+                if (!passwordCheck) {
+                    res.status(406)
+                        .send(`password incorrect ! '${req.body.login}' et '${req.body.password}'`);
+                } else {
+                    console.log("il existe bien ==================");
+                    message.deleteMessage(login, msg)
+                        .then((doc) => res.send(`delete of '${doc}' message succeded`))
+                        .catch((err) => res.status(500).send('delete invalide'));
                 }
             }
-            catch (e) {
-                res.status(500).send(e)
-            }
-        })
-
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-                                            SERVICE   =>           CREATION D'UN UTILISATEUR
-
- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-    router.put("/user", (req, res) => {
-        console.log(req.session);
-        const { login, password, lastname, firstname } = req.body;
-        if (!login || !password || !lastname || !firstname) {
-            res.status(400).send({"status": "error", "msg":"Missing fields"});
-        } else {
-            console.log('je suis la');
-            users.create(login, password, lastname, firstname)
-                .then((user_id) => res.status(201).send({ id: user_id }))
-                .catch((err) => {res.status(500).send(err); console.log(err)});
+        }
+        catch (e) {
+            res.status(500).send(e);
         }
     });
 
-/*---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-                                            SERVICE   =>           SEARCH USERS
+    /*---------------------------------------------------------------------------------------------------------------------------------
+     *                                        SERVICE   =>        GetMessage
+     * --------------------------------------------------------------------------------------------------------------------------------*/
 
- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    router.get("/message/:user_id", async (req, res) => {
+        try {
+            const exist = await users.exists(req.params.user_id);
+            if (!exist) {
+                res.status(401).json({
+                    status: 401,
+                    message: "Utilisateur inconnu"
+                });
+                return;
+            }
+            else {
+                const lesMsgs = await message.getMessage(req.params.user_id)
+                if (!lesMsgs) {
+                    res.status(401).json({
+                        status: 401,
+                        message: "Aucun message pour l'utilisateur"
+                    });
+                } else {
+                    let maList=[]
+                    lesMsgs.map((doc) => maList.push({ doc }))
+                    res.status(201).send(maList)
+                    //message.getMessage(req.params.user_id)
+                    //lesMsgs.then((docs) => {
+                    //        for (var doc in docs)
+                    //            res.status(201).send(`'${doc}'`)
+                    //    })
 
-    router.get("/user/search", (req, res) => {
-        const {lastname, firstname } = req.body;
-        if (!lastname && !firstname){
-            res.status(400).send({"status": "erro", "msg": "aucun nom ou prenom saisi"});
-        } else {
-            users.search(lastname, firstname)
-            .then((user_id) => res.status(201).send({ id: user_id}))
-            .catch((err) => res.status(500).send(err));
+                    //lesMsgs.catch((err) => res.status(400).send(err));
+                }
+
+            }
+        }
+        catch (e) {
+            res.status(500).send(e);
         }
     })
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                                        SERVICE   =>
+                                                  =>
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+router
+    .route("/profile/followings/:user_id")
+    .get(async (req, res) => {
+        try {
+            console.log(`y-t-il l'utilisateur '${req.params.user_id}' ?`);
+            const exist= await users.exists(req.params.user_id);
+            if(!exist)
+                res.status(404)
+                .send(`ùtilisateur '${req.params.user_id}' non existant`);
+            else{
+                console.log(`les followings de '${req.params.user_id}' sont:`);
+                let followings = await users.getFollowings(req.params.user_id)
+                /*.forEach((row) => {
+                    console.log(row.user)
+                })
+                .then( (row) => res.status(302).send())
+                .catch((err) => res.status(204).send(err));
+                //console.log(followings);
+
+                /*console.log(`les tweets '${req.params.user_id}' sont:`);
+                let tweets = massages.getTweets(req.params.user_id)
+                .then((user_id) => res.status(200).send(`les tweets de '${user_id}' sont recuperes`))
+                .catch((err) => res.status(204));
+                console.log(tweets);
+            }
+        }
+        catch (e) {
+            res.status(500).send(e)
+        }
+    })*/
 
     return router;
 }

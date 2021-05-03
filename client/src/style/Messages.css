@@ -1,0 +1,33 @@
+.messages{
+    border: 3px solid #ccc;
+    border-radius: 10px;
+    font-size: 26px;
+    line-height: 40px;
+    width: 800px;
+    margin-left: 10%;
+    margin-bottom: 10%;
+    border-bottom: 1px solid var(--twitter-background);
+}
+
+.enteteM{
+    margin-top: 5%;
+    padding-bottom: 10%;
+    display: flex;
+    justify-content: space-between;
+}
+.loginM{
+    color: #fff;
+    margin-right: 10%;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: var(--twitter-color);
+    background-color: var(--twitter-color);
+}
+
+.dataM{
+
+}
+
+.messageM{
+
+}

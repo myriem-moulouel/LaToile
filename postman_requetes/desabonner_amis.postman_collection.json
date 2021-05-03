@@ -1,0 +1,40 @@
+{
+	"info": {
+		"_postman_id": "0b391b77-37a8-4eea-9979-fdf4bb307628",
+		"name": "desabonner_amis",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:4000/api/user/unfollow/lila98",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"login\":\"marc93\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/api/user/unfollow/lila98",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"user",
+						"unfollow",
+						"lila98"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

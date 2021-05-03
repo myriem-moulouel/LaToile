@@ -86,14 +86,11 @@ class Users {
 
   checkpassword(login, password) {
     return new Promise((resolve, reject) => {
-      const checkLoginPwd = `SELECT login FROM users WHERE login = '${login}' and password = ?`;
-      console.log(password)
+        const checkLoginPwd = `SELECT login FROM users WHERE login = '${login}' and password = ?`;
       this.db.get(checkLoginPwd, [password], function(err, row){
         if(err){
-          console.log("err = ",err);
           reject(err);
         }else{
-          console.log("row = ",row)
           resolve(row != undefined);
         }
       })
@@ -209,6 +206,22 @@ class Users {
     })
   }
 
+
+    updateUser(login, password, lastname, firstname) {
+        let _this = this
+        return new Promise((resolve, reject) => {
+            var myreq = _this.db.prepare("UPDATE users SET password = ?, lastname = ?, firstname = ? WHERE rowid = ?")               //Préparation de la requête
+            myreq.run([ password, lastname, firstname, login], function (err, res) {
+                if (err) {
+                    console.log("erreur lors de la mise à jour de ", login)
+                    reject(err);
+                } else {
+                    console.log("Mise à jour réussie de ", login)
+                    resolve(this.lastID);
+                }
+            })
+        })
+    }
 
 }
 

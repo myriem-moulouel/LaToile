@@ -1,9 +1,0 @@
-.Myaccueil{
-    display:flex;
-    flex-direction: row
-}
-
-.messageDroit{
-    display:flex;
-    flex-direction: column
-}
